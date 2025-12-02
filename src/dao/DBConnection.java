@@ -10,7 +10,7 @@ public class DBConnection {
     private Connection connection;
     private static final String URL = "jdbc:mysql://localhost:3306/fitness_tracker_db";
     private static final String USER = "root";
-    private static final String PASSWORD = "password"; // Placeholder, user should update
+    private static final String PASSWORD = "Amazing123@"; // Placeholder, user should update
 
     private DBConnection() throws DatabaseException {
         try {

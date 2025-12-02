@@ -18,4 +18,8 @@ public class ChallengeService {
             System.err.println("Failed to join challenge: " + e.getMessage());
         }
     }
+
+    public java.util.List<model.Challenge> getAllChallenges() throws DatabaseException {
+        return challengeDAO.getAllChallenges();
+    }
 }

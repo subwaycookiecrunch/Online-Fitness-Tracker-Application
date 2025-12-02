@@ -13,9 +13,16 @@ import java.util.List;
 public class UserDAO {
 
     public void addUser(User user) throws DatabaseException {
+        try (Connection conn = DBConnection.getInstance().getConnection()) {
+            addUser(user, conn);
+        } catch (SQLException e) {
+            throw new DatabaseException("Error adding user: " + e.getMessage());
+        }
+    }
+
+    public void addUser(User user, Connection conn) throws DatabaseException {
         String sql = "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)";
-        try (Connection conn = DBConnection.getInstance().getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, user.getName());
             stmt.setString(2, user.getEmail());
             stmt.setString(3, user.getPassword());
@@ -27,9 +34,16 @@ public class UserDAO {
     }
 
     public void updateUser(User user) throws DatabaseException {
+        try (Connection conn = DBConnection.getInstance().getConnection()) {
+            updateUser(user, conn);
+        } catch (SQLException e) {
+            throw new DatabaseException("Error updating user: " + e.getMessage());
+        }
+    }
+
+    public void updateUser(User user, Connection conn) throws DatabaseException {
         String sql = "UPDATE users SET name = ?, email = ?, password = ? WHERE id = ?";
-        try (Connection conn = DBConnection.getInstance().getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, user.getName());
             stmt.setString(2, user.getEmail());
             stmt.setString(3, user.getPassword());
@@ -41,9 +55,16 @@ public class UserDAO {
     }
 
     public void deleteUser(int userId) throws DatabaseException {
+        try (Connection conn = DBConnection.getInstance().getConnection()) {
+            deleteUser(userId, conn);
+        } catch (SQLException e) {
+            throw new DatabaseException("Error deleting user: " + e.getMessage());
+        }
+    }
+
+    public void deleteUser(int userId, Connection conn) throws DatabaseException {
         String sql = "DELETE FROM users WHERE id = ?";
-        try (Connection conn = DBConnection.getInstance().getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userId);
             stmt.executeUpdate();
         } catch (SQLException e) {

@@ -1,6 +1,5 @@
 package ui;
 
-import dao.UserDAO;
 import model.User;
 import util.CustomExceptions.DatabaseException;
 import util.CustomExceptions.UserNotFoundException;
@@ -14,10 +13,10 @@ import java.awt.event.ActionListener;
 public class LoginUI extends JFrame {
     private JTextField emailField;
     private JPasswordField passwordField;
-    private UserDAO userDAO;
+    private service.UserService userService;
 
     public LoginUI() {
-        userDAO = new UserDAO();
+        userService = new service.UserService();
         setTitle("Fitness Tracker - Login");
         setSize(400, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -36,7 +35,11 @@ public class LoginUI extends JFrame {
         loginButton.addActionListener(new LoginAction());
         add(loginButton);
 
-        JButton registerButton = new JButton("Register"); // Placeholder for now
+        JButton registerButton = new JButton("Register");
+        registerButton.addActionListener(e -> {
+            new RegisterUI();
+            dispose();
+        });
         add(registerButton);
 
         setVisible(true);
@@ -54,20 +57,16 @@ public class LoginUI extends JFrame {
             }
 
             try {
-                User user = userDAO.getUserByEmail(email);
-                if (user.getPassword().equals(password)) {
-                    JOptionPane.showMessageDialog(LoginUI.this, "Login Successful! Role: " + user.getRole());
-                    dispose(); // Close Login Window
-                    if ("ADMIN".equalsIgnoreCase(user.getRole())) {
-                        new AdminDashboard(user);
-                    } else {
-                        new UserDashboard(user);
-                    }
+                User user = userService.login(email, password);
+                JOptionPane.showMessageDialog(LoginUI.this, "Login Successful! Role: " + user.getRole());
+                dispose(); // Close Login Window
+                if ("ADMIN".equalsIgnoreCase(user.getRole())) {
+                    new AdminDashboard(user);
                 } else {
-                    JOptionPane.showMessageDialog(LoginUI.this, "Invalid Password");
+                    new UserDashboard(user);
                 }
             } catch (UserNotFoundException ex) {
-                JOptionPane.showMessageDialog(LoginUI.this, "User not found");
+                JOptionPane.showMessageDialog(LoginUI.this, "Invalid Email or Password");
             } catch (DatabaseException ex) {
                 JOptionPane.showMessageDialog(LoginUI.this, "Database Error: " + ex.getMessage());
             }

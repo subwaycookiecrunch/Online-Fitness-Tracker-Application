@@ -1,6 +1,5 @@
 package ui.forms;
 
-import dao.WorkoutDAO;
 import model.Workout;
 import util.CustomExceptions.DatabaseException;
 
@@ -10,12 +9,12 @@ import java.sql.Date;
 
 public class EditWorkoutForm extends JDialog {
     private Workout workout;
-    private WorkoutDAO workoutDAO;
+    private service.WorkoutService workoutService;
 
     public EditWorkoutForm(Frame owner, Workout workout) {
         super(owner, "Edit Workout", true);
         this.workout = workout;
-        this.workoutDAO = new WorkoutDAO();
+        this.workoutService = new service.WorkoutService();
 
         setSize(400, 300);
         setLocationRelativeTo(owner);
@@ -47,7 +46,7 @@ public class EditWorkoutForm extends JDialog {
                 workout.setIntensity((String) intensityBox.getSelectedItem());
                 workout.setDate(Date.valueOf(dateField.getText()));
 
-                workoutDAO.updateWorkout(workout);
+                workoutService.updateWorkout(workout);
                 JOptionPane.showMessageDialog(this, "Workout Updated!");
                 dispose();
             } catch (NumberFormatException ex) {

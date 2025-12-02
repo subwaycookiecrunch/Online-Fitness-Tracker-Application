@@ -1,8 +1,5 @@
 package ui;
 
-import dao.ChallengeDAO;
-import dao.UserDAO;
-import dao.WorkoutDAO;
 import model.Challenge;
 import model.User;
 import model.Workout;
@@ -20,17 +17,17 @@ import java.util.List;
 
 public class UserDashboard extends JFrame {
     private User user;
-    private WorkoutDAO workoutDAO;
-    private ChallengeDAO challengeDAO;
-    private UserDAO userDAO;
+    private service.WorkoutService workoutService;
+    private service.ChallengeService challengeService;
+    private service.UserService userService;
     private ProgressService progressService;
     private RecommendationService recommendationService;
 
     public UserDashboard(User user) {
         this.user = user;
-        this.workoutDAO = new WorkoutDAO();
-        this.challengeDAO = new ChallengeDAO();
-        this.userDAO = new UserDAO();
+        this.workoutService = new service.WorkoutService();
+        this.challengeService = new service.ChallengeService();
+        this.userService = new service.UserService();
         this.progressService = new ProgressService();
         this.recommendationService = new RecommendationService();
 
@@ -91,7 +88,7 @@ public class UserDashboard extends JFrame {
             if (row != -1) {
                 int id = (int) model.getValueAt(row, 0);
                 try {
-                    workoutDAO.deleteWorkout(id);
+                    workoutService.deleteWorkout(id);
                     refreshWorkoutTable(model);
                     JOptionPane.showMessageDialog(this, "Workout Deleted");
                 } catch (DatabaseException ex) {
@@ -108,7 +105,7 @@ public class UserDashboard extends JFrame {
     private void refreshWorkoutTable(DefaultTableModel model) {
         model.setRowCount(0);
         try {
-            List<Workout> workouts = workoutDAO.getWorkoutsByUser(user.getId());
+            List<Workout> workouts = workoutService.getWorkoutsByUser(user.getId());
             for (Workout w : workouts) {
                 model.addRow(new Object[] { w.getId(), w.getType(), w.getDuration(), w.getIntensity(), w.getDate() });
             }
@@ -139,7 +136,7 @@ public class UserDashboard extends JFrame {
         JTable table = new JTable(model);
 
         try {
-            List<Challenge> challenges = challengeDAO.getAllChallenges();
+            List<Challenge> challenges = challengeService.getAllChallenges();
             for (Challenge c : challenges) {
                 model.addRow(new Object[] { c.getId(), c.getTitle(), c.getDescription(), c.getStatus() });
             }
@@ -154,12 +151,8 @@ public class UserDashboard extends JFrame {
             int row = table.getSelectedRow();
             if (row != -1) {
                 int challengeId = (int) model.getValueAt(row, 0);
-                try {
-                    challengeDAO.joinChallenge(user.getId(), challengeId);
-                    JOptionPane.showMessageDialog(this, "Joined Challenge Successfully!");
-                } catch (DatabaseException ex) {
-                    JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
-                }
+                challengeService.joinChallenge(user.getId(), challengeId);
+                JOptionPane.showMessageDialog(this, "Joined Challenge Successfully!");
             }
         });
         panel.add(joinButton, BorderLayout.SOUTH);
